@@ -1,0 +1,96 @@
+
+
+1) edit the /etc/hosts  file 
+
+vi /etc/hosts
+
+172.31.44.176 provider
+172.31.32.224 requester
+
+- should ping eacher using host-name 
+
+2) Edit the mysql config file
+
+vi /etc/my.cnf.d/server.cnf   on centos7
+vi /etc/mysql/mariadb.conf.d/50-server.cnf on ubuntu
+
+
+a) for 172.31.44.176 provider
+
+
+# Galera-related settings
+[galera]
+wsrep_on=ON
+wsrep_provider=/usr/lib64/galera/libgalera_smm.so   # on ubuntu /usr/lib/galera/libgalera_smm.so
+wsrep_cluster_address="gcomm://172.31.44.176,172.31.32.224"
+binlog_format=row
+default_storage_engine=InnoDB
+innodb_autoinc_lock_mode=2
+
+# Galera Cluster Configuration
+wsrep_cluster_name="mygaleracluster"
+
+# Galera Synchronization Configuration
+wsrep_sst_method=rsync
+
+# Galera Node Configuration
+wsrep_node_address="172.31.44.176"
+wsrep_node_name="provider"
+
+# Allow server to accept connections on all interfaces.
+bind-address=0.0.0.0
+
+
+b) 172.31.32.224 requester
+
+# Galera-related settings
+[galera]
+wsrep_on=ON
+wsrep_provider=/usr/lib64/galera/libgalera_smm.so   # on ubuntu /usr/lib/galera/libgalera_smm.so
+wsrep_cluster_address="gcomm://172.31.44.176,172.31.32.224"
+binlog_format=row
+default_storage_engine=InnoDB
+innodb_autoinc_lock_mode=2
+
+# Galera Cluster Configuration
+wsrep_cluster_name="mygaleracluster"
+
+# Galera Synchronization Configuration
+wsrep_sst_method=rsync
+
+# Galera Node Configuration
+wsrep_node_address="172.31.32.224"
+wsrep_node_name="requester"
+
+# Allow server to accept connections on all interfaces.
+bind-address=0.0.0.0
+
+3) Create the galera clutser
+
+a) stop mariadb service on all the nodes 
+b)execute the following from any one the nodes 
+$ galera_new_cluster
+$ systemctl status mariadb --> service should be running 
+
+c) go to all other nodes and start mariadb service 
+
+4) enter into mariadb console and check the galera status 
+
+show status like '%wsrep_cluster_size%';
+show status like '%wsrep_cluster_status%';
+
+5) Create database and tables and check the replication.
+
+only tables created with innodb engine will replicate the data 
+
+
+
+
+
+
+
+
+
+
+
+
