@@ -80,8 +80,7 @@ show status like '%wsrep_cluster_size%';
 show status like '%wsrep_cluster_status%';
 
 5) Create database and tables and check the replication.
-
-only tables created with innodb engine will replicate the data 
+ 
 
 
 
